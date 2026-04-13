@@ -1092,8 +1092,7 @@
       },
       "energy": {
         "cumulative": true,
-        "cumulativeImportedCapability": "meter_power.electricity",
-        "cumulativeExportedCapability": "meter_power.electricity"
+        "cumulativeImportedCapability": "meter_power.electricity"
       },
       "platforms": [
         "local",

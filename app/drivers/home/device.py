@@ -1,6 +1,6 @@
 import logging
 import random
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import homey
 
@@ -42,8 +42,7 @@ class OctopusEnergyDevice(homey.Device):
 
     def _schedule_rates(self) -> None:
         now = datetime.now(tz=timezone.utc)
-        next_hour = now.replace(minute=0, second=0, microsecond=0)
-        next_hour = next_hour.replace(hour=next_hour.hour + 1) if next_hour.hour < 23 else next_hour.replace(hour=0)
+        next_hour = (now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1))
         jitter = random.randint(0, _JITTER_MAX)
         delay_ms = int((next_hour.timestamp() - now.timestamp() + jitter) * 1000)
 
