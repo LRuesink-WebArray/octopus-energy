@@ -1,0 +1,29 @@
+{
+  "pair": {
+    "region_select": {
+      "title": "Select your country",
+      "body": "Choose the country your Octopus Energy account is registered in."
+    },
+    "account_link": {
+      "title": "Link your account",
+      "body": "Click the button below to sign in to your Octopus Energy account and authorize access. Once you have completed authorization, click Continue."
+    }
+  },
+  "error": {
+    "authorization_required": "Re-authorization required. Please repair the device.",
+    "rate_limit": "Too many requests. Please try again later.",
+    "unknown": "An unexpected error occurred."
+  },
+  "flow": {
+    "triggers": {
+      "electricity_price_below_avg": "Electricity price is below average",
+      "electricity_price_above_avg": "Electricity price is above average",
+      "electricity_price_at_lowest_today": "Electricity price is today's lowest",
+      "electricity_price_at_highest_today": "Electricity price is today's highest",
+      "gas_price_below_avg": "Gas price is below average",
+      "gas_price_above_avg": "Gas price is above average",
+      "gas_price_at_lowest_today": "Gas price is today's lowest",
+      "gas_price_at_highest_today": "Gas price is today's highest"
+    }
+  }
+}

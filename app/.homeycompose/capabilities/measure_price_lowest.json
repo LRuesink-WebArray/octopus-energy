@@ -1,0 +1,13 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Lowest price today"
+  },
+  "units": {
+    "en": "ct/kWh"
+  },
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "decimals": 4
+}

@@ -1,0 +1,23 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Current price"
+  },
+  "units": {
+    "en": "ct/kWh"
+  },
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "decimals": 4,
+  "$flow": {
+    "triggers": [
+      {
+        "id": "measure_price_current_changed",
+        "title": {
+          "en": "Current price changed"
+        }
+      }
+    ]
+  }
+}

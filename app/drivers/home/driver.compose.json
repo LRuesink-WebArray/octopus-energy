@@ -1,0 +1,83 @@
+{
+  "name": {
+    "en": "Home"
+  },
+  "class": "other",
+  "capabilities": [
+    "meter_power.electricity",
+    "meter_power.gas",
+    "measure_price_current.electricity",
+    "measure_price_current.gas",
+    "measure_price_highest.electricity",
+    "measure_price_highest.gas",
+    "measure_price_lowest.electricity",
+    "measure_price_lowest.gas"
+  ],
+  "capabilitiesOptions": {
+    "meter_power.electricity": {
+      "title": { "en": "Electricity consumption" }
+    },
+    "meter_power.gas": {
+      "title": { "en": "Gas consumption" }
+    },
+    "measure_price_current.electricity": {
+      "title": { "en": "Current electricity price" }
+    },
+    "measure_price_current.gas": {
+      "title": { "en": "Current gas price" }
+    },
+    "measure_price_highest.electricity": {
+      "title": { "en": "Highest electricity price today" }
+    },
+    "measure_price_highest.gas": {
+      "title": { "en": "Highest gas price today" }
+    },
+    "measure_price_lowest.electricity": {
+      "title": { "en": "Lowest electricity price today" }
+    },
+    "measure_price_lowest.gas": {
+      "title": { "en": "Lowest gas price today" }
+    }
+  },
+  "energy": {
+    "cumulative": true,
+    "cumulativeImportedCapability": "meter_power.electricity",
+    "cumulativeExportedCapability": "meter_power.electricity"
+  },
+  "platforms": ["local", "cloud"],
+  "connectivity": [],
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png"
+  },
+  "pair": [
+    {
+      "id": "region_select"
+    },
+    {
+      "id": "loading",
+      "template": "loading"
+    },
+    {
+      "id": "account_link"
+    },
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": { "next": "add_devices" }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ],
+  "repair": [
+    {
+      "id": "loading",
+      "template": "loading"
+    },
+    {
+      "id": "account_link"
+    }
+  ]
+}

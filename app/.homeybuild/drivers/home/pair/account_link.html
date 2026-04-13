@@ -1,0 +1,42 @@
+<style>
+  #button {
+    margin-top: 16px;
+  }
+</style>
+
+<header class="homey-header">
+  <h1 class="homey-title" data-i18n="pair.account_link.title">Link your account</h1>
+</header>
+
+<p data-i18n="pair.account_link.body">
+  Click the button below to sign in to your Octopus Energy account and authorize access.
+  Once you have completed authorization, click Continue.
+</p>
+
+<button id="linkButton" class="homey-button-secondary-full" style="margin-top: 16px;" disabled>
+  Sign in to Octopus Energy
+</button>
+
+<button id="continueButton" class="homey-button-primary-full" style="margin-top: 8px;" disabled>
+  Continue
+</button>
+
+<script type="text/javascript">
+  var authUrl = null;
+
+  Homey.on('account_link_init', function (url) {
+    authUrl = url;
+    document.getElementById('linkButton').disabled = false;
+  });
+
+  document.getElementById('linkButton').addEventListener('click', function () {
+    if (authUrl) {
+      Homey.popup(authUrl);
+      document.getElementById('continueButton').disabled = false;
+    }
+  });
+
+  document.getElementById('continueButton').addEventListener('click', function () {
+    Homey.nextView();
+  });
+</script>
