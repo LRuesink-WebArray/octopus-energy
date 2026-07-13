@@ -1,6 +1,8 @@
 <style>
-  #button {
+  #status {
     margin-top: 16px;
+    text-align: center;
+    color: var(--homey-text-color-light);
   }
 </style>
 
@@ -9,34 +11,55 @@
 </header>
 
 <p data-i18n="pair.account_link.body">
-  Click the button below to sign in to your Octopus Energy account and authorize access.
-  Once you have completed authorization, click Continue.
+  Sign in to your Octopus Energy account and authorize access. This screen
+  continues automatically once you have completed authorization.
 </p>
 
-<button id="linkButton" class="homey-button-secondary-full" style="margin-top: 16px;" disabled>
+<button id="linkButton" class="homey-button-primary-full" style="margin-top: 16px;" disabled>
   Sign in to Octopus Energy
 </button>
 
-<button id="continueButton" class="homey-button-primary-full" style="margin-top: 8px;" disabled>
-  Continue
-</button>
+<p id="status"></p>
 
 <script type="text/javascript">
   var authUrl = null;
+  var linkButton = document.getElementById('linkButton');
+  var status = document.getElementById('status');
 
-  Homey.on('account_link_init', function (url) {
+  function setAuthUrl(url) {
+    if (!url || authUrl) return;
     authUrl = url;
-    document.getElementById('linkButton').disabled = false;
+    linkButton.disabled = false;
+  }
+
+  // The app provides Homey's OAuth2 callback URL via get_account_link. It is set
+  // just after the loading view, so poll briefly until it is available.
+  function pollUrl(attempt) {
+    Homey.emit('get_account_link').then(function (url) {
+      if (url) {
+        setAuthUrl(url);
+      } else if (attempt < 20) {
+        setTimeout(function () { pollUrl(attempt + 1); }, 250);
+      }
+    }).catch(function (err) {
+      console.error('get_account_link failed', err);
+    });
+  }
+  pollUrl(0);
+
+  // The app advances the wizard automatically once the code is exchanged; this
+  // is just for feedback if the user returns to this screen.
+  Homey.on('authorized', function () {
+    status.textContent = 'Authorized — loading your account…';
+  });
+  Homey.on('auth_failed', function (msg) {
+    status.textContent = 'Authorization failed: ' + msg + ' — tap Sign in to try again.';
   });
 
-  document.getElementById('linkButton').addEventListener('click', function () {
+  linkButton.addEventListener('click', function () {
     if (authUrl) {
       Homey.popup(authUrl);
-      document.getElementById('continueButton').disabled = false;
+      status.textContent = 'Waiting for authorization…';
     }
-  });
-
-  document.getElementById('continueButton').addEventListener('click', function () {
-    Homey.nextView();
   });
 </script>

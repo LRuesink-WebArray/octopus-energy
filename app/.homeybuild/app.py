@@ -1,7 +1,7 @@
-import homey
+from homey.app import App
 
 
-class OctopusEnergyApp(homey.App):
+class OctopusEnergyApp(App):
     async def on_init(self) -> None:
         self.log("Octopus Energy app initialized")
 

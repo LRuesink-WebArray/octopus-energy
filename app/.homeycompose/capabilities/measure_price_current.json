@@ -9,7 +9,7 @@
   "getable": true,
   "setable": false,
   "insights": true,
-  "decimals": 4,
+  "decimals": 1,
   "$flow": {
     "triggers": [
       {

@@ -4,8 +4,6 @@
   },
   "class": "other",
   "capabilities": [
-    "meter_power.electricity",
-    "meter_power.gas",
     "measure_price_current.electricity",
     "measure_price_current.gas",
     "measure_price_highest.electricity",
@@ -14,12 +12,6 @@
     "measure_price_lowest.gas"
   ],
   "capabilitiesOptions": {
-    "meter_power.electricity": {
-      "title": { "en": "Electricity consumption" }
-    },
-    "meter_power.gas": {
-      "title": { "en": "Gas consumption" }
-    },
     "measure_price_current.electricity": {
       "title": { "en": "Current electricity price" }
     },
@@ -38,10 +30,6 @@
     "measure_price_lowest.gas": {
       "title": { "en": "Lowest gas price today" }
     }
-  },
-  "energy": {
-    "cumulative": true,
-    "cumulativeImportedCapability": "meter_power.electricity"
   },
   "platforms": ["local", "cloud"],
   "connectivity": [],

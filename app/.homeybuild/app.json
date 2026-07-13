@@ -2,8 +2,13 @@
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.octopusenergy",
   "version": "1.0.0",
-  "compatibility": ">=12.0.1",
+  "compatibility": ">=13.0.0",
   "sdk": 3,
+  "runtime": "python",
+  "pythonVersion": "3.13",
+  "pythonPackages": [
+    "httpx==0.28.1"
+  ],
   "brandColor": "#e6007e",
   "platforms": [
     "local",
@@ -13,7 +18,7 @@
     "en": "Octopus Energy"
   },
   "description": {
-    "en": "Connect your Octopus Energy account to Homey for real-time pricing and consumption insights."
+    "en": "Connect your Octopus Energy account to Homey for real-time energy price forecasts and price-based automation."
   },
   "category": [
     "energy"
@@ -1039,8 +1044,6 @@
       },
       "class": "other",
       "capabilities": [
-        "meter_power.electricity",
-        "meter_power.gas",
         "measure_price_current.electricity",
         "measure_price_current.gas",
         "measure_price_highest.electricity",
@@ -1049,16 +1052,6 @@
         "measure_price_lowest.gas"
       ],
       "capabilitiesOptions": {
-        "meter_power.electricity": {
-          "title": {
-            "en": "Electricity consumption"
-          }
-        },
-        "meter_power.gas": {
-          "title": {
-            "en": "Gas consumption"
-          }
-        },
         "measure_price_current.electricity": {
           "title": {
             "en": "Current electricity price"
@@ -1089,10 +1082,6 @@
             "en": "Lowest gas price today"
           }
         }
-      },
-      "energy": {
-        "cumulative": true,
-        "cumulativeImportedCapability": "meter_power.electricity"
       },
       "platforms": [
         "local",
@@ -1150,7 +1139,7 @@
       "getable": true,
       "setable": false,
       "insights": true,
-      "decimals": 4
+      "decimals": 1
     },
     "measure_price_highest": {
       "type": "number",
@@ -1163,7 +1152,7 @@
       "getable": true,
       "setable": false,
       "insights": true,
-      "decimals": 4
+      "decimals": 1
     },
     "measure_price_lowest": {
       "type": "number",
@@ -1176,7 +1165,7 @@
       "getable": true,
       "setable": false,
       "insights": true,
-      "decimals": 4
+      "decimals": 1
     }
   }
 }

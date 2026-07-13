@@ -1,15 +1,18 @@
 {
   "id": "com.octopusenergy",
   "version": "1.0.0",
-  "compatibility": ">=12.0.1",
+  "compatibility": ">=13.0.0",
   "sdk": 3,
+  "runtime": "python",
+  "pythonVersion": "3.13",
+  "pythonPackages": ["httpx==0.28.1"],
   "brandColor": "#e6007e",
   "platforms": ["local", "cloud"],
   "name": {
     "en": "Octopus Energy"
   },
   "description": {
-    "en": "Connect your Octopus Energy account to Homey for real-time pricing and consumption insights."
+    "en": "Connect your Octopus Energy account to Homey for real-time energy price forecasts and price-based automation."
   },
   "category": ["energy"],
   "permissions": [],
