@@ -1,0 +1,13 @@
+{
+  "id": "gas_price_at_highest_today",
+  "title": {
+    "en": "Gas price is today's highest"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=home&capabilities=measure_price_current.gas"
+    }
+  ]
+}

@@ -36,19 +36,19 @@
   "flow": {
     "triggers": [
       {
-        "id": "electricity_price_below_avg",
+        "id": "electricity_price_above_avg",
         "title": {
-          "en": "Electricity price is below average"
+          "en": "Electricity price is above average"
         },
         "titleFormatted": {
-          "en": "Electricity price is [[percentage]]% below average of next [[hours]] hours"
+          "en": "Electricity price is [[percentage]]% above average of next [[hours]] hours"
         },
         "tokens": [],
         "args": [
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
           },
           {
             "type": "number",
@@ -71,19 +71,175 @@
         ]
       },
       {
-        "id": "electricity_price_above_avg",
+        "id": "electricity_price_above_avg_today",
         "title": {
-          "en": "Electricity price is above average"
+          "en": "Electricity price is above today's average"
         },
         "titleFormatted": {
-          "en": "Electricity price is [[percentage]]% above average of next [[hours]] hours"
+          "en": "Electricity price is [[percentage]]% above today's average"
         },
         "tokens": [],
         "args": [
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+          },
+          {
+            "type": "number",
+            "name": "percentage",
+            "title": {
+              "en": "Percentage"
+            },
+            "min": 0,
+            "max": 100
+          }
+        ]
+      },
+      {
+        "id": "electricity_price_among_highest_today",
+        "title": {
+          "en": "Electricity price is among today's highest"
+        },
+        "titleFormatted": {
+          "en": "Electricity price is among [[ranked_hours]] highest hours today"
+        },
+        "tokens": [],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+          },
+          {
+            "type": "number",
+            "name": "ranked_hours",
+            "title": {
+              "en": "Number of hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "electricity_price_among_lowest_today",
+        "title": {
+          "en": "Electricity price is among today's lowest"
+        },
+        "titleFormatted": {
+          "en": "Electricity price is among [[ranked_hours]] lowest hours today"
+        },
+        "tokens": [],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+          },
+          {
+            "type": "number",
+            "name": "ranked_hours",
+            "title": {
+              "en": "Number of hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "electricity_price_at_highest",
+        "title": {
+          "en": "Electricity price is the highest"
+        },
+        "titleFormatted": {
+          "en": "Electricity price is the highest of the next [[hours]] hours"
+        },
+        "tokens": [],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+          },
+          {
+            "type": "number",
+            "name": "hours",
+            "title": {
+              "en": "Hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "electricity_price_at_highest_today",
+        "title": {
+          "en": "Electricity price is today's highest"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+          }
+        ]
+      },
+      {
+        "id": "electricity_price_at_lowest",
+        "title": {
+          "en": "Electricity price is the lowest"
+        },
+        "titleFormatted": {
+          "en": "Electricity price is the lowest of the next [[hours]] hours"
+        },
+        "tokens": [],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+          },
+          {
+            "type": "number",
+            "name": "hours",
+            "title": {
+              "en": "Hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "electricity_price_at_lowest_today",
+        "title": {
+          "en": "Electricity price is today's lowest"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+          }
+        ]
+      },
+      {
+        "id": "electricity_price_below_avg",
+        "title": {
+          "en": "Electricity price is below average"
+        },
+        "titleFormatted": {
+          "en": "Electricity price is [[percentage]]% below average of next [[hours]] hours"
+        },
+        "tokens": [],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
           },
           {
             "type": "number",
@@ -118,7 +274,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
           },
           {
             "type": "number",
@@ -128,197 +284,6 @@
             },
             "min": 0,
             "max": 100
-          }
-        ]
-      },
-      {
-        "id": "electricity_price_above_avg_today",
-        "title": {
-          "en": "Electricity price is above today's average"
-        },
-        "titleFormatted": {
-          "en": "Electricity price is [[percentage]]% above today's average"
-        },
-        "tokens": [],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "percentage",
-            "title": {
-              "en": "Percentage"
-            },
-            "min": 0,
-            "max": 100
-          }
-        ]
-      },
-      {
-        "id": "electricity_price_at_lowest",
-        "title": {
-          "en": "Electricity price is the lowest"
-        },
-        "titleFormatted": {
-          "en": "Electricity price is the lowest of the next [[hours]] hours"
-        },
-        "tokens": [],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "hours",
-            "title": {
-              "en": "Hours"
-            },
-            "min": 1,
-            "max": 24
-          }
-        ]
-      },
-      {
-        "id": "electricity_price_at_highest",
-        "title": {
-          "en": "Electricity price is the highest"
-        },
-        "titleFormatted": {
-          "en": "Electricity price is the highest of the next [[hours]] hours"
-        },
-        "tokens": [],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "hours",
-            "title": {
-              "en": "Hours"
-            },
-            "min": 1,
-            "max": 24
-          }
-        ]
-      },
-      {
-        "id": "electricity_price_at_lowest_today",
-        "title": {
-          "en": "Electricity price is today's lowest"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          }
-        ]
-      },
-      {
-        "id": "electricity_price_at_highest_today",
-        "title": {
-          "en": "Electricity price is today's highest"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          }
-        ]
-      },
-      {
-        "id": "electricity_price_among_lowest_today",
-        "title": {
-          "en": "Electricity price is among today's lowest"
-        },
-        "titleFormatted": {
-          "en": "Electricity price is among [[ranked_hours]] lowest hours today"
-        },
-        "tokens": [],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "ranked_hours",
-            "title": {
-              "en": "Number of hours"
-            },
-            "min": 1,
-            "max": 24
-          }
-        ]
-      },
-      {
-        "id": "electricity_price_among_highest_today",
-        "title": {
-          "en": "Electricity price is among today's highest"
-        },
-        "titleFormatted": {
-          "en": "Electricity price is among [[ranked_hours]] highest hours today"
-        },
-        "tokens": [],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "ranked_hours",
-            "title": {
-              "en": "Number of hours"
-            },
-            "min": 1,
-            "max": 24
-          }
-        ]
-      },
-      {
-        "id": "gas_price_below_avg",
-        "title": {
-          "en": "Gas price is below average"
-        },
-        "titleFormatted": {
-          "en": "Gas price is [[percentage]]% below average of next [[hours]] hours"
-        },
-        "tokens": [],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "percentage",
-            "title": {
-              "en": "Percentage"
-            },
-            "min": 0,
-            "max": 100
-          },
-          {
-            "type": "number",
-            "name": "hours",
-            "title": {
-              "en": "Hours"
-            },
-            "min": 1,
-            "max": 24
           }
         ]
       },
@@ -335,7 +300,198 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
+          },
+          {
+            "type": "number",
+            "name": "percentage",
+            "title": {
+              "en": "Percentage"
+            },
+            "min": 0,
+            "max": 100
+          },
+          {
+            "type": "number",
+            "name": "hours",
+            "title": {
+              "en": "Hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "gas_price_above_avg_today",
+        "title": {
+          "en": "Gas price is above today's average"
+        },
+        "titleFormatted": {
+          "en": "Gas price is [[percentage]]% above today's average"
+        },
+        "tokens": [],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
+          },
+          {
+            "type": "number",
+            "name": "percentage",
+            "title": {
+              "en": "Percentage"
+            },
+            "min": 0,
+            "max": 100
+          }
+        ]
+      },
+      {
+        "id": "gas_price_among_highest_today",
+        "title": {
+          "en": "Gas price is among today's highest"
+        },
+        "titleFormatted": {
+          "en": "Gas price is among [[ranked_hours]] highest hours today"
+        },
+        "tokens": [],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
+          },
+          {
+            "type": "number",
+            "name": "ranked_hours",
+            "title": {
+              "en": "Number of hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "gas_price_among_lowest_today",
+        "title": {
+          "en": "Gas price is among today's lowest"
+        },
+        "titleFormatted": {
+          "en": "Gas price is among [[ranked_hours]] lowest hours today"
+        },
+        "tokens": [],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
+          },
+          {
+            "type": "number",
+            "name": "ranked_hours",
+            "title": {
+              "en": "Number of hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "gas_price_at_highest",
+        "title": {
+          "en": "Gas price is the highest"
+        },
+        "titleFormatted": {
+          "en": "Gas price is the highest of the next [[hours]] hours"
+        },
+        "tokens": [],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
+          },
+          {
+            "type": "number",
+            "name": "hours",
+            "title": {
+              "en": "Hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "gas_price_at_highest_today",
+        "title": {
+          "en": "Gas price is today's highest"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
+          }
+        ]
+      },
+      {
+        "id": "gas_price_at_lowest",
+        "title": {
+          "en": "Gas price is the lowest"
+        },
+        "titleFormatted": {
+          "en": "Gas price is the lowest of the next [[hours]] hours"
+        },
+        "tokens": [],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
+          },
+          {
+            "type": "number",
+            "name": "hours",
+            "title": {
+              "en": "Hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "gas_price_at_lowest_today",
+        "title": {
+          "en": "Gas price is today's lowest"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
+          }
+        ]
+      },
+      {
+        "id": "gas_price_below_avg",
+        "title": {
+          "en": "Gas price is below average"
+        },
+        "titleFormatted": {
+          "en": "Gas price is [[percentage]]% below average of next [[hours]] hours"
+        },
+        "tokens": [],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
           },
           {
             "type": "number",
@@ -370,7 +526,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
           },
           {
             "type": "number",
@@ -380,187 +536,173 @@
             },
             "min": 0,
             "max": 100
-          }
-        ]
-      },
-      {
-        "id": "gas_price_above_avg_today",
-        "title": {
-          "en": "Gas price is above today's average"
-        },
-        "titleFormatted": {
-          "en": "Gas price is [[percentage]]% above today's average"
-        },
-        "tokens": [],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "percentage",
-            "title": {
-              "en": "Percentage"
-            },
-            "min": 0,
-            "max": 100
-          }
-        ]
-      },
-      {
-        "id": "gas_price_at_lowest",
-        "title": {
-          "en": "Gas price is the lowest"
-        },
-        "titleFormatted": {
-          "en": "Gas price is the lowest of the next [[hours]] hours"
-        },
-        "tokens": [],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "hours",
-            "title": {
-              "en": "Hours"
-            },
-            "min": 1,
-            "max": 24
-          }
-        ]
-      },
-      {
-        "id": "gas_price_at_highest",
-        "title": {
-          "en": "Gas price is the highest"
-        },
-        "titleFormatted": {
-          "en": "Gas price is the highest of the next [[hours]] hours"
-        },
-        "tokens": [],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "hours",
-            "title": {
-              "en": "Hours"
-            },
-            "min": 1,
-            "max": 24
-          }
-        ]
-      },
-      {
-        "id": "gas_price_at_lowest_today",
-        "title": {
-          "en": "Gas price is today's lowest"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          }
-        ]
-      },
-      {
-        "id": "gas_price_at_highest_today",
-        "title": {
-          "en": "Gas price is today's highest"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          }
-        ]
-      },
-      {
-        "id": "gas_price_among_lowest_today",
-        "title": {
-          "en": "Gas price is among today's lowest"
-        },
-        "titleFormatted": {
-          "en": "Gas price is among [[ranked_hours]] lowest hours today"
-        },
-        "tokens": [],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "ranked_hours",
-            "title": {
-              "en": "Number of hours"
-            },
-            "min": 1,
-            "max": 24
-          }
-        ]
-      },
-      {
-        "id": "gas_price_among_highest_today",
-        "title": {
-          "en": "Gas price is among today's highest"
-        },
-        "titleFormatted": {
-          "en": "Gas price is among [[ranked_hours]] highest hours today"
-        },
-        "tokens": [],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "ranked_hours",
-            "title": {
-              "en": "Number of hours"
-            },
-            "min": 1,
-            "max": 24
           }
         ]
       }
     ],
     "conditions": [
       {
-        "id": "electricity_current_price_below",
+        "id": "electricity_cond_price_among_highest_today",
         "title": {
-          "en": "Electricity price is !{{below|above}} threshold"
+          "en": "Electricity price is !{{among today's highest|not among today's highest}}"
         },
         "titleFormatted": {
-          "en": "Electricity price is !{{below|above}} [[price]] ct/kWh"
+          "en": "Electricity price is !{{among|not among}} [[ranked_hours]] highest hours today"
         },
         "args": [
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
           },
           {
             "type": "number",
-            "name": "price",
+            "name": "ranked_hours",
             "title": {
-              "en": "Price (ct/kWh)"
+              "en": "Number of hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "electricity_cond_price_among_lowest_during_time",
+        "title": {
+          "en": "Electricity price is !{{among the lowest|not among the lowest}} during time window"
+        },
+        "titleFormatted": {
+          "en": "Electricity price is !{{among|not among}} [[ranked_hours]] lowest hours between [[time_from]] and [[time_to]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+          },
+          {
+            "type": "number",
+            "name": "ranked_hours",
+            "title": {
+              "en": "Number of hours"
+            },
+            "min": 1,
+            "max": 24
+          },
+          {
+            "type": "time",
+            "name": "time_from",
+            "title": {
+              "en": "From"
             }
+          },
+          {
+            "type": "time",
+            "name": "time_to",
+            "title": {
+              "en": "To"
+            }
+          }
+        ]
+      },
+      {
+        "id": "electricity_cond_price_among_lowest_today",
+        "title": {
+          "en": "Electricity price is !{{among today's lowest|not among today's lowest}}"
+        },
+        "titleFormatted": {
+          "en": "Electricity price is !{{among|not among}} [[ranked_hours]] lowest hours today"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+          },
+          {
+            "type": "number",
+            "name": "ranked_hours",
+            "title": {
+              "en": "Number of hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "electricity_cond_price_at_highest",
+        "title": {
+          "en": "Electricity price is !{{the highest|not the highest}} (next N hours)"
+        },
+        "titleFormatted": {
+          "en": "Electricity price is !{{the highest|not the highest}} of next [[hours]] hours"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+          },
+          {
+            "type": "number",
+            "name": "hours",
+            "title": {
+              "en": "Hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "electricity_cond_price_at_highest_today",
+        "title": {
+          "en": "Electricity price is !{{today's highest|not today's highest}}"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+          }
+        ]
+      },
+      {
+        "id": "electricity_cond_price_at_lowest",
+        "title": {
+          "en": "Electricity price is !{{the lowest|not the lowest}} (next N hours)"
+        },
+        "titleFormatted": {
+          "en": "Electricity price is !{{the lowest|not the lowest}} of next [[hours]] hours"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+          },
+          {
+            "type": "number",
+            "name": "hours",
+            "title": {
+              "en": "Hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "electricity_cond_price_at_lowest_today",
+        "title": {
+          "en": "Electricity price is !{{today's lowest|not today's lowest}}"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
           }
         ]
       },
@@ -576,7 +718,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
           },
           {
             "type": "number",
@@ -610,7 +752,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
           },
           {
             "type": "number",
@@ -624,94 +766,41 @@
         ]
       },
       {
-        "id": "electricity_cond_price_at_lowest",
+        "id": "electricity_current_price_below",
         "title": {
-          "en": "Electricity price is !{{the lowest|not the lowest}} (next N hours)"
+          "en": "Electricity price is !{{below|above}} threshold"
         },
         "titleFormatted": {
-          "en": "Electricity price is !{{the lowest|not the lowest}} of next [[hours]] hours"
+          "en": "Electricity price is !{{below|above}} [[price]] ct/kWh"
         },
         "args": [
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.electricity"
           },
           {
             "type": "number",
-            "name": "hours",
+            "name": "price",
             "title": {
-              "en": "Hours"
-            },
-            "min": 1,
-            "max": 24
+              "en": "Price (ct/kWh)"
+            }
           }
         ]
       },
       {
-        "id": "electricity_cond_price_at_highest",
+        "id": "gas_cond_price_among_highest_today",
         "title": {
-          "en": "Electricity price is !{{the highest|not the highest}} (next N hours)"
+          "en": "Gas price is !{{among today's highest|not among today's highest}}"
         },
         "titleFormatted": {
-          "en": "Electricity price is !{{the highest|not the highest}} of next [[hours]] hours"
+          "en": "Gas price is !{{among|not among}} [[ranked_hours]] highest hours today"
         },
         "args": [
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "hours",
-            "title": {
-              "en": "Hours"
-            },
-            "min": 1,
-            "max": 24
-          }
-        ]
-      },
-      {
-        "id": "electricity_cond_price_at_lowest_today",
-        "title": {
-          "en": "Electricity price is !{{today's lowest|not today's lowest}}"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          }
-        ]
-      },
-      {
-        "id": "electricity_cond_price_at_highest_today",
-        "title": {
-          "en": "Electricity price is !{{today's highest|not today's highest}}"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          }
-        ]
-      },
-      {
-        "id": "electricity_cond_price_among_lowest_today",
-        "title": {
-          "en": "Electricity price is !{{among today's lowest|not among today's lowest}}"
-        },
-        "titleFormatted": {
-          "en": "Electricity price is !{{among|not among}} [[ranked_hours]] lowest hours today"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
           },
           {
             "type": "number",
@@ -725,43 +814,18 @@
         ]
       },
       {
-        "id": "electricity_cond_price_among_highest_today",
+        "id": "gas_cond_price_among_lowest_during_time",
         "title": {
-          "en": "Electricity price is !{{among today's highest|not among today's highest}}"
+          "en": "Gas price is !{{among the lowest|not among the lowest}} during time window"
         },
         "titleFormatted": {
-          "en": "Electricity price is !{{among|not among}} [[ranked_hours]] highest hours today"
+          "en": "Gas price is !{{among|not among}} [[ranked_hours]] lowest hours between [[time_from]] and [[time_to]]"
         },
         "args": [
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "ranked_hours",
-            "title": {
-              "en": "Number of hours"
-            },
-            "min": 1,
-            "max": 24
-          }
-        ]
-      },
-      {
-        "id": "electricity_cond_price_among_lowest_during_time",
-        "title": {
-          "en": "Electricity price is !{{among the lowest|not among the lowest}} during time window"
-        },
-        "titleFormatted": {
-          "en": "Electricity price is !{{among|not among}} [[ranked_hours]] lowest hours between [[time_from]] and [[time_to]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
           },
           {
             "type": "number",
@@ -789,25 +853,103 @@
         ]
       },
       {
-        "id": "gas_current_price_below",
+        "id": "gas_cond_price_among_lowest_today",
         "title": {
-          "en": "Gas price is !{{below|above}} threshold"
+          "en": "Gas price is !{{among today's lowest|not among today's lowest}}"
         },
         "titleFormatted": {
-          "en": "Gas price is !{{below|above}} [[price]] ct/kWh"
+          "en": "Gas price is !{{among|not among}} [[ranked_hours]] lowest hours today"
         },
         "args": [
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
           },
           {
             "type": "number",
-            "name": "price",
+            "name": "ranked_hours",
             "title": {
-              "en": "Price (ct/kWh)"
-            }
+              "en": "Number of hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "gas_cond_price_at_highest",
+        "title": {
+          "en": "Gas price is !{{the highest|not the highest}} (next N hours)"
+        },
+        "titleFormatted": {
+          "en": "Gas price is !{{the highest|not the highest}} of next [[hours]] hours"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
+          },
+          {
+            "type": "number",
+            "name": "hours",
+            "title": {
+              "en": "Hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "gas_cond_price_at_highest_today",
+        "title": {
+          "en": "Gas price is !{{today's highest|not today's highest}}"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
+          }
+        ]
+      },
+      {
+        "id": "gas_cond_price_at_lowest",
+        "title": {
+          "en": "Gas price is !{{the lowest|not the lowest}} (next N hours)"
+        },
+        "titleFormatted": {
+          "en": "Gas price is !{{the lowest|not the lowest}} of next [[hours]] hours"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
+          },
+          {
+            "type": "number",
+            "name": "hours",
+            "title": {
+              "en": "Hours"
+            },
+            "min": 1,
+            "max": 24
+          }
+        ]
+      },
+      {
+        "id": "gas_cond_price_at_lowest_today",
+        "title": {
+          "en": "Gas price is !{{today's lowest|not today's lowest}}"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
           }
         ]
       },
@@ -823,7 +965,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
           },
           {
             "type": "number",
@@ -857,7 +999,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
           },
           {
             "type": "number",
@@ -871,166 +1013,24 @@
         ]
       },
       {
-        "id": "gas_cond_price_at_lowest",
+        "id": "gas_current_price_below",
         "title": {
-          "en": "Gas price is !{{the lowest|not the lowest}} (next N hours)"
+          "en": "Gas price is !{{below|above}} threshold"
         },
         "titleFormatted": {
-          "en": "Gas price is !{{the lowest|not the lowest}} of next [[hours]] hours"
+          "en": "Gas price is !{{below|above}} [[price]] ct/kWh"
         },
         "args": [
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=home"
+            "filter": "driver_id=home&capabilities=measure_price_current.gas"
           },
           {
             "type": "number",
-            "name": "hours",
+            "name": "price",
             "title": {
-              "en": "Hours"
-            },
-            "min": 1,
-            "max": 24
-          }
-        ]
-      },
-      {
-        "id": "gas_cond_price_at_highest",
-        "title": {
-          "en": "Gas price is !{{the highest|not the highest}} (next N hours)"
-        },
-        "titleFormatted": {
-          "en": "Gas price is !{{the highest|not the highest}} of next [[hours]] hours"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "hours",
-            "title": {
-              "en": "Hours"
-            },
-            "min": 1,
-            "max": 24
-          }
-        ]
-      },
-      {
-        "id": "gas_cond_price_at_lowest_today",
-        "title": {
-          "en": "Gas price is !{{today's lowest|not today's lowest}}"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          }
-        ]
-      },
-      {
-        "id": "gas_cond_price_at_highest_today",
-        "title": {
-          "en": "Gas price is !{{today's highest|not today's highest}}"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          }
-        ]
-      },
-      {
-        "id": "gas_cond_price_among_lowest_today",
-        "title": {
-          "en": "Gas price is !{{among today's lowest|not among today's lowest}}"
-        },
-        "titleFormatted": {
-          "en": "Gas price is !{{among|not among}} [[ranked_hours]] lowest hours today"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "ranked_hours",
-            "title": {
-              "en": "Number of hours"
-            },
-            "min": 1,
-            "max": 24
-          }
-        ]
-      },
-      {
-        "id": "gas_cond_price_among_highest_today",
-        "title": {
-          "en": "Gas price is !{{among today's highest|not among today's highest}}"
-        },
-        "titleFormatted": {
-          "en": "Gas price is !{{among|not among}} [[ranked_hours]] highest hours today"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "ranked_hours",
-            "title": {
-              "en": "Number of hours"
-            },
-            "min": 1,
-            "max": 24
-          }
-        ]
-      },
-      {
-        "id": "gas_cond_price_among_lowest_during_time",
-        "title": {
-          "en": "Gas price is !{{among the lowest|not among the lowest}} during time window"
-        },
-        "titleFormatted": {
-          "en": "Gas price is !{{among|not among}} [[ranked_hours]] lowest hours between [[time_from]] and [[time_to]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=home"
-          },
-          {
-            "type": "number",
-            "name": "ranked_hours",
-            "title": {
-              "en": "Number of hours"
-            },
-            "min": 1,
-            "max": 24
-          },
-          {
-            "type": "time",
-            "name": "time_from",
-            "title": {
-              "en": "From"
-            }
-          },
-          {
-            "type": "time",
-            "name": "time_to",
-            "title": {
-              "en": "To"
+              "en": "Price (ct/kWh)"
             }
           }
         ]

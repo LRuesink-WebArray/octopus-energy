@@ -1,0 +1,26 @@
+{
+  "id": "gas_price_among_lowest_today",
+  "title": {
+    "en": "Gas price is among today's lowest"
+  },
+  "titleFormatted": {
+    "en": "Gas price is among [[ranked_hours]] lowest hours today"
+  },
+  "tokens": [],
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=home&capabilities=measure_price_current.gas"
+    },
+    {
+      "type": "number",
+      "name": "ranked_hours",
+      "title": {
+        "en": "Number of hours"
+      },
+      "min": 1,
+      "max": 24
+    }
+  ]
+}

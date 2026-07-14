@@ -1,0 +1,39 @@
+{
+  "id": "electricity_cond_price_among_lowest_during_time",
+  "title": {
+    "en": "Electricity price is !{{among the lowest|not among the lowest}} during time window"
+  },
+  "titleFormatted": {
+    "en": "Electricity price is !{{among|not among}} [[ranked_hours]] lowest hours between [[time_from]] and [[time_to]]"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+    },
+    {
+      "type": "number",
+      "name": "ranked_hours",
+      "title": {
+        "en": "Number of hours"
+      },
+      "min": 1,
+      "max": 24
+    },
+    {
+      "type": "time",
+      "name": "time_from",
+      "title": {
+        "en": "From"
+      }
+    },
+    {
+      "type": "time",
+      "name": "time_to",
+      "title": {
+        "en": "To"
+      }
+    }
+  ]
+}

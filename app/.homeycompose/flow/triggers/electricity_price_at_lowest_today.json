@@ -1,0 +1,13 @@
+{
+  "id": "electricity_price_at_lowest_today",
+  "title": {
+    "en": "Electricity price is today's lowest"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+    }
+  ]
+}

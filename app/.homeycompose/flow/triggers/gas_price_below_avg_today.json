@@ -1,0 +1,26 @@
+{
+  "id": "gas_price_below_avg_today",
+  "title": {
+    "en": "Gas price is below today's average"
+  },
+  "titleFormatted": {
+    "en": "Gas price is [[percentage]]% below today's average"
+  },
+  "tokens": [],
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=home&capabilities=measure_price_current.gas"
+    },
+    {
+      "type": "number",
+      "name": "percentage",
+      "title": {
+        "en": "Percentage"
+      },
+      "min": 0,
+      "max": 100
+    }
+  ]
+}

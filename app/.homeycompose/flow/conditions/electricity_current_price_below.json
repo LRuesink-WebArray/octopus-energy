@@ -1,0 +1,23 @@
+{
+  "id": "electricity_current_price_below",
+  "title": {
+    "en": "Electricity price is !{{below|above}} threshold"
+  },
+  "titleFormatted": {
+    "en": "Electricity price is !{{below|above}} [[price]] ct/kWh"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+    },
+    {
+      "type": "number",
+      "name": "price",
+      "title": {
+        "en": "Price (ct/kWh)"
+      }
+    }
+  ]
+}

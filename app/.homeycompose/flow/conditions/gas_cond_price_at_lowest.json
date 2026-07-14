@@ -1,0 +1,25 @@
+{
+  "id": "gas_cond_price_at_lowest",
+  "title": {
+    "en": "Gas price is !{{the lowest|not the lowest}} (next N hours)"
+  },
+  "titleFormatted": {
+    "en": "Gas price is !{{the lowest|not the lowest}} of next [[hours]] hours"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=home&capabilities=measure_price_current.gas"
+    },
+    {
+      "type": "number",
+      "name": "hours",
+      "title": {
+        "en": "Hours"
+      },
+      "min": 1,
+      "max": 24
+    }
+  ]
+}

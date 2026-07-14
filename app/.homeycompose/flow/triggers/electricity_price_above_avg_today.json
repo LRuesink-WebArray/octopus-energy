@@ -1,0 +1,26 @@
+{
+  "id": "electricity_price_above_avg_today",
+  "title": {
+    "en": "Electricity price is above today's average"
+  },
+  "titleFormatted": {
+    "en": "Electricity price is [[percentage]]% above today's average"
+  },
+  "tokens": [],
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+    },
+    {
+      "type": "number",
+      "name": "percentage",
+      "title": {
+        "en": "Percentage"
+      },
+      "min": 0,
+      "max": 100
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "electricity_price_among_highest_today",
+  "title": {
+    "en": "Electricity price is among today's highest"
+  },
+  "titleFormatted": {
+    "en": "Electricity price is among [[ranked_hours]] highest hours today"
+  },
+  "tokens": [],
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=home&capabilities=measure_price_current.electricity"
+    },
+    {
+      "type": "number",
+      "name": "ranked_hours",
+      "title": {
+        "en": "Number of hours"
+      },
+      "min": 1,
+      "max": 24
+    }
+  ]
+}

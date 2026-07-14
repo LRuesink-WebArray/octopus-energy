@@ -1,0 +1,23 @@
+{
+  "id": "gas_current_price_below",
+  "title": {
+    "en": "Gas price is !{{below|above}} threshold"
+  },
+  "titleFormatted": {
+    "en": "Gas price is !{{below|above}} [[price]] ct/kWh"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=home&capabilities=measure_price_current.gas"
+    },
+    {
+      "type": "number",
+      "name": "price",
+      "title": {
+        "en": "Price (ct/kWh)"
+      }
+    }
+  ]
+}

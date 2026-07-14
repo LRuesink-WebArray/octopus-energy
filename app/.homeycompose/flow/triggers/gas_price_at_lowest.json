@@ -1,0 +1,26 @@
+{
+  "id": "gas_price_at_lowest",
+  "title": {
+    "en": "Gas price is the lowest"
+  },
+  "titleFormatted": {
+    "en": "Gas price is the lowest of the next [[hours]] hours"
+  },
+  "tokens": [],
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=home&capabilities=measure_price_current.gas"
+    },
+    {
+      "type": "number",
+      "name": "hours",
+      "title": {
+        "en": "Hours"
+      },
+      "min": 1,
+      "max": 24
+    }
+  ]
+}
