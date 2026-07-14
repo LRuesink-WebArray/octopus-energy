@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import random
 from datetime import datetime, timedelta, timezone
@@ -18,6 +19,11 @@ _JITTER_MAX = 60                  # seconds of random jitter to spread server lo
 class OctopusEnergyDevice(Device):
 
     async def on_init(self) -> None:
+        # Captured here (on the event-loop thread) so the sync set_timeout
+        # callback can schedule the async rates tick back onto the loop.
+        self._loop = asyncio.get_running_loop()
+        self._rates_task: asyncio.Task | None = None
+
         server_url, source = resolve_server_url(self.homey)
         self.client = ServerClient(server_url)
         account_number = self.get_store().get("account_number")
@@ -52,6 +58,8 @@ class OctopusEnergyDevice(Device):
     def on_deleted(self) -> None:
         if hasattr(self, "_rates_timer") and self._rates_timer:
             self.homey.clear_timeout(self._rates_timer)
+        if getattr(self, "_rates_task", None):
+            self._rates_task.cancel()
 
     # ------------------------------------------------------------------
     # Capabilities
@@ -101,8 +109,15 @@ class OctopusEnergyDevice(Device):
         jitter = random.randint(0, _JITTER_MAX)
         delay_ms = int((next_hour.timestamp() - now.timestamp() + jitter) * 1000)
 
-        self._rates_timer = self.homey.set_timeout(self._rates_tick, delay_ms)
+        self._rates_timer = self.homey.set_timeout(self._fire_rates_tick, delay_ms)
         self.log(f"Next rates poll in {delay_ms / 1000:.0f}s (+{jitter}s jitter)")
+
+    def _fire_rates_tick(self) -> None:
+        # Homey's set_timeout invokes callbacks synchronously and does not await
+        # coroutines, so a bare `self._rates_tick` would be created and dropped
+        # un-awaited (the poll would silently never run). Schedule it on the loop
+        # instead; keep a reference so the task isn't garbage-collected mid-flight.
+        self._rates_task = self._loop.create_task(self._rates_tick())
 
     async def _rates_tick(self) -> None:
         try:
