@@ -9,5 +9,6 @@
   "getable": true,
   "setable": false,
   "insights": true,
-  "decimals": 1
+  "decimals": 1,
+  "icon": "/assets/current_price.svg"
 }

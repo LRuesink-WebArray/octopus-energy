@@ -10,6 +10,7 @@
   "setable": false,
   "insights": true,
   "decimals": 1,
+  "icon": "/assets/current_price.svg",
   "$flow": {
     "triggers": [
       {

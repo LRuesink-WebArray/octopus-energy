@@ -1,5 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
-  <circle cx="128" cy="128" r="120" fill="#e6007e"/>
-  <path d="M128 48c-12 0-24 20-24 40s24 40 24 80c0-40 24-60 24-80s-12-40-24-40z" fill="#fff"/>
-  <circle cx="128" cy="188" r="16" fill="#fff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 141 156" role="img" aria-labelledby="title-constantine">
+    <title id="title-constantine">Constantine the Octopus</title>
+    <!--
+      Homey renders app/device icons as a single-color alpha MASK: every opaque
+      area is painted in the theme colour, transparent areas stay empty. So this
+      icon is one solid silhouette with the eyes punched out as transparent holes
+      (fill-rule evenodd) and the pupils drawn back in on top. Colour is irrelevant
+      (masked) — kept black so it also reads on a light background if shown un-masked.
+    -->
+    <path fill="#000" fill-rule="evenodd" clip-rule="evenodd"
+          d="M122.8 110.748c2.021-9.605 16.17-23.309 17.943-42.146C143.053 43.885 130.596 0 69.794 0S0 45.334 0 64.255c0 25.296 18.521 38.379 17.655 47.363.082.041.165.124.247.165.454 9.73-9.735 10.309-9.157 16.313.454 4.678 13.653 5.837 22.77.869-1.444 2.774-3.465 5.299-5.982 6.707-4.702 2.608-8.497 3.892-8.497 6.79s14.107 10.267 28.586 3.105c4.29-2.112 7.384-4.389 9.735-6.624.082.496.123.952.206 1.366.701 4.14 3.094 15.691 13.53 15.691s12.54-10.102 14.272-16.105c.124-.497.289-.994.413-1.491 2.35 2.443 5.65 4.927 10.312 7.246 14.479 7.162 28.586-.207 28.586-3.105 0-2.899-3.795-4.141-8.497-6.79-2.682-1.491-4.785-4.182-6.229-7.163 9.116 5.548 23.141 4.472 23.595-.372.577-6.128-10.107-6.583-9.117-17.016.083-.249.207-.331.372-.456ZM26.174 79.78a16.602 16.602 0 1 0 33.204 0 16.602 16.602 0 1 0-33.204 0ZM79.309 79.78a15.318 15.318 0 1 0 30.636 0 15.318 15.318 0 1 0-30.636 0Z"></path>
+    <circle fill="#000" cx="43.889" cy="82.389" r="5.4"></circle>
+    <circle fill="#000" cx="94.585" cy="82.346" r="5.4"></circle>
 </svg>
