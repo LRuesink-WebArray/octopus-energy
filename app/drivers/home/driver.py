@@ -5,6 +5,7 @@ from homey.driver import Driver
 from homey.pair_session import PairSession
 
 from ...lib import resolve_server_url
+from ...lib.capabilities import CAPABILITY_OPTIONS, ELECTRICITY_CAPS, GAS_CAPS
 from ...lib.server_client import ServerClient
 
 logger = logging.getLogger(__name__)
@@ -104,15 +105,22 @@ class OctopusEnergyDriver(Driver):
             for account_number in account_numbers:
                 try:
                     contract = await self.client.get_contract(homey_id, region, account_number)
+                    has_elec = bool(contract.get("electricity"))
+                    has_gas = bool(contract.get("gas"))
+                    # Create the device with only the fuel(s) it actually has, so
+                    # single-fuel accounts don't show dead price tiles.
+                    capabilities = (ELECTRICITY_CAPS if has_elec else []) + (GAS_CAPS if has_gas else [])
                     devices.append({
                         "name": f"Octopus Energy — {account_number}",
                         "data": {"id": f"{homey_id}:{region}:{account_number}"},
+                        "capabilities": capabilities,
+                        "capabilitiesOptions": {c: CAPABILITY_OPTIONS[c] for c in capabilities},
                         "store": {
                             "homey_id": homey_id,
                             "region": region,
                             "account_number": account_number,
-                            "electricity_malo_id": contract.get("electricity", {}).get("malo_id") if contract.get("electricity") else None,
-                            "gas_malo_id": contract.get("gas", {}).get("malo_id") if contract.get("gas") else None,
+                            "electricity_malo_id": contract.get("electricity", {}).get("malo_id") if has_elec else None,
+                            "gas_malo_id": contract.get("gas", {}).get("malo_id") if has_gas else None,
                         },
                     })
                 except Exception as exc:

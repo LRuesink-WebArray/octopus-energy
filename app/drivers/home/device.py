@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 from homey.device import Device
 
 from ...lib import resolve_server_url
+from ...lib.capabilities import CAPABILITY_OPTIONS, ELECTRICITY_CAPS, GAS_CAPS
 from ...lib.prices import Prices
 from ...lib.server_client import ServerClient
 
@@ -25,6 +26,13 @@ class OctopusEnergyDevice(Device):
         self._electricity_prices: Prices | None = None
         self._gas_prices: Prices | None = None
 
+        # Keep this device's capabilities aligned with the fuel(s) its account
+        # actually has, so a single-fuel account doesn't show dead tiles.
+        try:
+            await self._sync_capabilities()
+        except Exception as exc:
+            self.error(f"Capability sync failed: {exc!r}")
+
         # Flow-card run listeners are app-global and only need registering once.
         # A redundant registration from another device just raises AlreadyExists,
         # which must NOT abort this device's polling below.
@@ -44,6 +52,44 @@ class OctopusEnergyDevice(Device):
     def on_deleted(self) -> None:
         if hasattr(self, "_rates_timer") and self._rates_timer:
             self.homey.clear_timeout(self._rates_timer)
+
+    # ------------------------------------------------------------------
+    # Capabilities
+    # ------------------------------------------------------------------
+
+    async def _sync_capabilities(self) -> None:
+        """Add/remove price capabilities so the device only exposes the fuel(s)
+        its account has. Driven by the malo ids stored from the contract at
+        pairing — never the (possibly transiently empty) rates response."""
+        store = self.get_store()
+        want: set[str] = set()
+        if store.get("electricity_malo_id"):
+            want.update(ELECTRICITY_CAPS)
+        if store.get("gas_malo_id"):
+            want.update(GAS_CAPS)
+
+        # Neither fuel known (older/incomplete store) — don't strip blindly.
+        if not want:
+            return
+
+        added, removed = [], []
+        for cap in ELECTRICITY_CAPS + GAS_CAPS:
+            has = self.has_capability(cap)
+            if cap in want and not has:
+                await self.add_capability(cap)
+                options = CAPABILITY_OPTIONS.get(cap)
+                if options:
+                    try:
+                        await self.set_capability_options(cap, options)
+                    except Exception as exc:
+                        self.error(f"Failed to set options for {cap}: {exc!r}")
+                added.append(cap)
+            elif cap not in want and has:
+                await self.remove_capability(cap)
+                removed.append(cap)
+
+        if added or removed:
+            self.log(f"Capabilities synced: +{added} -{removed}")
 
     # ------------------------------------------------------------------
     # Scheduling
@@ -110,6 +156,8 @@ class OctopusEnergyDevice(Device):
     async def _update_electricity_capabilities(self, now: datetime) -> None:
         if not self._electricity_prices:
             return
+        if not self.has_capability("measure_price_current.electricity"):
+            return
         current = self._electricity_prices.get_at_instant(now)
         if current is not None:
             await self.set_capability_value("measure_price_current.electricity", round(current, 4))
@@ -118,6 +166,8 @@ class OctopusEnergyDevice(Device):
 
     async def _update_gas_capabilities(self, now: datetime) -> None:
         if not self._gas_prices:
+            return
+        if not self.has_capability("measure_price_current.gas"):
             return
         current = self._gas_prices.get_at_instant(now)
         if current is not None:
@@ -330,7 +380,9 @@ class OctopusEnergyDevice(Device):
 
         def current(args):
             device = args.get("device")
-            return device.get_capability_value("measure_price_current.electricity") if device else None
+            if not device or not device.has_capability("measure_price_current.electricity"):
+                return None
+            return device.get_capability_value("measure_price_current.electricity")
 
         async def below_threshold(args):
             price = current(args)
@@ -416,7 +468,9 @@ class OctopusEnergyDevice(Device):
 
         def current(args):
             device = args.get("device")
-            return device.get_capability_value("measure_price_current.gas") if device else None
+            if not device or not device.has_capability("measure_price_current.gas"):
+                return None
+            return device.get_capability_value("measure_price_current.gas")
 
         async def below_threshold(args):
             price = current(args)
