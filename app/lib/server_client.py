@@ -87,17 +87,25 @@ class ServerClient:
         region: str,
         account_number: str,
     ) -> list[dict[str, Any]]:
-        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
-            resp = await client.get(
-                f"{self._base}/rates/electricity",
-                params={
-                    "homey_id": homey_id,
-                    "region": region,
-                    "account_number": account_number,
-                },
-            )
-            resp.raise_for_status()
-            return resp.json()
+        url = f"{self._base}/rates/electricity"
+        try:
+            async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+                resp = await client.get(
+                    url,
+                    params={
+                        "homey_id": homey_id,
+                        "region": region,
+                        "account_number": account_number,
+                    },
+                )
+                resp.raise_for_status()
+                return resp.json()
+        except httpx.HTTPStatusError as exc:
+            logger.error("GET %s -> %s: %s", url, exc.response.status_code, exc.response.text)
+            raise
+        except httpx.HTTPError as exc:
+            logger.error("GET %s failed: %r", url, exc)
+            raise
 
     async def get_gas_rates(
         self,
@@ -105,14 +113,22 @@ class ServerClient:
         region: str,
         account_number: str,
     ) -> list[dict[str, Any]]:
-        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
-            resp = await client.get(
-                f"{self._base}/rates/gas",
-                params={
-                    "homey_id": homey_id,
-                    "region": region,
-                    "account_number": account_number,
-                },
-            )
-            resp.raise_for_status()
-            return resp.json()
+        url = f"{self._base}/rates/gas"
+        try:
+            async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+                resp = await client.get(
+                    url,
+                    params={
+                        "homey_id": homey_id,
+                        "region": region,
+                        "account_number": account_number,
+                    },
+                )
+                resp.raise_for_status()
+                return resp.json()
+        except httpx.HTTPStatusError as exc:
+            logger.error("GET %s -> %s: %s", url, exc.response.status_code, exc.response.text)
+            raise
+        except httpx.HTTPError as exc:
+            logger.error("GET %s failed: %r", url, exc)
+            raise
