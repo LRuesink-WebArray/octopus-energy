@@ -221,9 +221,9 @@ class OctopusEnergyDevice(Device):
         await self._trigger("electricity_price_among_lowest_today", {}, state)
         await self._trigger("electricity_price_among_highest_today", {}, state)
 
-        if current == self._electricity_prices.get_lowest():
+        if self._electricity_prices.is_cheapest(current):
             await self._trigger("electricity_price_at_lowest_today", {}, state)
-        if current == self._electricity_prices.get_highest():
+        if self._electricity_prices.is_priciest(current):
             await self._trigger("electricity_price_at_highest_today", {}, state)
 
     async def _fire_gas_triggers(self, now: datetime) -> None:
@@ -250,9 +250,9 @@ class OctopusEnergyDevice(Device):
         await self._trigger("gas_price_among_lowest_today", {}, state)
         await self._trigger("gas_price_among_highest_today", {}, state)
 
-        if current == self._gas_prices.get_lowest():
+        if self._gas_prices.is_cheapest(current):
             await self._trigger("gas_price_at_lowest_today", {}, state)
-        if current == self._gas_prices.get_highest():
+        if self._gas_prices.is_priciest(current):
             await self._trigger("gas_price_at_highest_today", {}, state)
 
     async def _trigger(self, card_id: str, tokens: dict, state: dict) -> None:
@@ -283,284 +283,150 @@ class OctopusEnergyDevice(Device):
         self._register_gas_conditions()
 
     def _register_electricity_triggers(self) -> None:
+        self._register_price_triggers("electricity")
+
+    def _register_price_triggers(self, fuel: str) -> None:
         def make_price_state(state):
             return Prices(state["slots"]), state["current"]
 
-        def register_avg(card_id: str, use_today: bool) -> None:
+        def window_for(prices, args, use_today):
+            if use_today:
+                return prices
+            return prices.get_for_next_n_hours(datetime.now(tz=timezone.utc), args.get("hours", 1))
+
+        def register_avg(card_id, use_today, above):
             card = self.homey.flow.get_device_trigger_card(card_id)
-            async def run(args, state):
+            async def run(args, state, _ut=use_today, _ab=above):
                 prices, current = make_price_state(state)
-                window = prices if use_today else prices.get_for_next_n_hours(datetime.now(tz=timezone.utc), args.get("hours", 1))
-                avg = window.get_average()
+                window = window_for(prices, args, _ut)
                 pct = args.get("percentage", 0)
-                return current < avg * (1 - pct / 100)
+                return window.is_above_average(current, pct) if _ab else window.is_below_average(current, pct)
             card.register_run_listener(run)
 
-        register_avg("electricity_price_below_avg", use_today=False)
-        register_avg("electricity_price_below_avg_today", use_today=True)
+        register_avg(f"{fuel}_price_below_avg", use_today=False, above=False)
+        register_avg(f"{fuel}_price_below_avg_today", use_today=True, above=False)
+        register_avg(f"{fuel}_price_above_avg", use_today=False, above=True)
+        register_avg(f"{fuel}_price_above_avg_today", use_today=True, above=True)
 
-        def register_above_avg(card_id: str, use_today: bool) -> None:
+        def register_extreme(card_id, is_low, use_today):
             card = self.homey.flow.get_device_trigger_card(card_id)
-            async def run(args, state):
+            async def run(args, state, _low=is_low, _ut=use_today):
                 prices, current = make_price_state(state)
-                window = prices if use_today else prices.get_for_next_n_hours(datetime.now(tz=timezone.utc), args.get("hours", 1))
-                avg = window.get_average()
-                pct = args.get("percentage", 0)
-                return current > avg * (1 + pct / 100)
+                window = window_for(prices, args, _ut)
+                return window.is_cheapest(current) if _low else window.is_priciest(current)
             card.register_run_listener(run)
 
-        register_above_avg("electricity_price_above_avg", use_today=False)
-        register_above_avg("electricity_price_above_avg_today", use_today=True)
+        register_extreme(f"{fuel}_price_at_lowest", is_low=True, use_today=False)
+        register_extreme(f"{fuel}_price_at_highest", is_low=False, use_today=False)
+        register_extreme(f"{fuel}_price_at_lowest_today", is_low=True, use_today=True)
+        register_extreme(f"{fuel}_price_at_highest_today", is_low=False, use_today=True)
 
-        for card_id, is_lowest in [("electricity_price_at_lowest", True), ("electricity_price_at_highest", False)]:
+        def register_among(card_id, is_low):
             card = self.homey.flow.get_device_trigger_card(card_id)
-            _is_lowest = is_lowest
-            async def run(args, state, _low=_is_lowest):
-                prices, current = make_price_state(state)
-                window = prices.get_for_next_n_hours(datetime.now(tz=timezone.utc), args.get("hours", 1))
-                return current == (window.get_lowest() if _low else window.get_highest())
-            card.register_run_listener(run)
-
-        for card_id in ("electricity_price_at_lowest_today", "electricity_price_at_highest_today"):
-            card = self.homey.flow.get_device_trigger_card(card_id)
-            async def run(args, state):
-                return True
-            card.register_run_listener(run)
-
-        for card_id, is_lowest in [("electricity_price_among_lowest_today", True), ("electricity_price_among_highest_today", False)]:
-            card = self.homey.flow.get_device_trigger_card(card_id)
-            _is_lowest = is_lowest
-            async def run(args, state, _low=_is_lowest):
+            async def run(args, state, _low=is_low):
                 prices, current = make_price_state(state)
                 n = args.get("ranked_hours", 1)
-                ranked = sorted(prices.get_sorted_values())
-                cutoffs = ranked[:n] if _low else ranked[-n:]
-                return current in cutoffs
+                return prices.is_among_cheapest(current, n) if _low else prices.is_among_priciest(current, n)
             card.register_run_listener(run)
+
+        register_among(f"{fuel}_price_among_lowest_today", is_low=True)
+        register_among(f"{fuel}_price_among_highest_today", is_low=False)
 
     def _register_gas_triggers(self) -> None:
-        def make_price_state(state):
-            return Prices(state["slots"]), state["current"]
-
-        for card_id, use_today, above in [
-            ("gas_price_below_avg", False, False),
-            ("gas_price_above_avg", False, True),
-            ("gas_price_below_avg_today", True, False),
-            ("gas_price_above_avg_today", True, True),
-        ]:
-            card = self.homey.flow.get_device_trigger_card(card_id)
-            _use_today, _above = use_today, above
-            async def run(args, state, _ut=_use_today, _ab=_above):
-                prices, current = make_price_state(state)
-                window = prices if _ut else prices.get_for_next_n_hours(datetime.now(tz=timezone.utc), args.get("hours", 1))
-                avg = window.get_average()
-                pct = args.get("percentage", 0)
-                if _ab:
-                    return current > avg * (1 + pct / 100)
-                return current < avg * (1 - pct / 100)
-            card.register_run_listener(run)
-
-        for card_id, is_lowest in [("gas_price_at_lowest", True), ("gas_price_at_highest", False)]:
-            card = self.homey.flow.get_device_trigger_card(card_id)
-            _is_lowest = is_lowest
-            async def run(args, state, _low=_is_lowest):
-                prices, current = make_price_state(state)
-                window = prices.get_for_next_n_hours(datetime.now(tz=timezone.utc), args.get("hours", 1))
-                return current == (window.get_lowest() if _low else window.get_highest())
-            card.register_run_listener(run)
-
-        for card_id in ("gas_price_at_lowest_today", "gas_price_at_highest_today"):
-            card = self.homey.flow.get_device_trigger_card(card_id)
-            async def run(args, state):
-                return True
-            card.register_run_listener(run)
-
-        for card_id, is_lowest in [("gas_price_among_lowest_today", True), ("gas_price_among_highest_today", False)]:
-            card = self.homey.flow.get_device_trigger_card(card_id)
-            _is_lowest = is_lowest
-            async def run(args, state, _low=_is_lowest):
-                prices, current = make_price_state(state)
-                n = args.get("ranked_hours", 1)
-                ranked = sorted(prices.get_sorted_values())
-                cutoffs = ranked[:n] if _low else ranked[-n:]
-                return current in cutoffs
-            card.register_run_listener(run)
+        self._register_price_triggers("gas")
 
     def _register_electricity_conditions(self) -> None:
+        self._register_price_conditions("electricity")
+
+    def _register_price_conditions(self, fuel: str) -> None:
         flow = self.homey.flow
+        cap = f"measure_price_current.{fuel}"
+        prefix = f"{fuel}_cond_price"
 
         def prices(args):
             device = args.get("device")
-            return getattr(device, "_electricity_prices", None) if device else None
+            return getattr(device, f"_{fuel}_prices", None) if device else None
 
         def current(args):
             device = args.get("device")
-            if not device or not device.has_capability("measure_price_current.electricity"):
+            if not device or not device.has_capability(cap):
                 return None
-            return device.get_capability_value("measure_price_current.electricity")
+            return device.get_capability_value(cap)
+
+        def window(args, p):
+            return p.get_for_next_n_hours(datetime.now(tz=timezone.utc), args.get("hours", 1))
 
         async def below_threshold(args):
             price = current(args)
             return price is not None and price < args.get("price", 0)
-        flow.get_condition_card("electricity_current_price_below").register_run_listener(below_threshold)
+        flow.get_condition_card(f"{fuel}_current_price_below").register_run_listener(below_threshold)
 
         async def below_avg(args):
             p, c = prices(args), current(args)
             if not p or c is None:
                 return False
-            window = p.get_for_next_n_hours(datetime.now(tz=timezone.utc), args.get("hours", 1))
-            return c < window.get_average() * (1 - args.get("percentage", 0) / 100)
-        flow.get_condition_card("electricity_cond_price_below_avg").register_run_listener(below_avg)
+            return window(args, p).is_below_average(c, args.get("percentage", 0))
+        flow.get_condition_card(f"{prefix}_below_avg").register_run_listener(below_avg)
 
         async def below_avg_today(args):
             p, c = prices(args), current(args)
             if not p or c is None:
                 return False
-            return c < p.get_average() * (1 - args.get("percentage", 0) / 100)
-        flow.get_condition_card("electricity_cond_price_below_avg_today").register_run_listener(below_avg_today)
+            return p.is_below_average(c, args.get("percentage", 0))
+        flow.get_condition_card(f"{prefix}_below_avg_today").register_run_listener(below_avg_today)
 
         async def at_lowest(args):
             p, c = prices(args), current(args)
             if not p or c is None:
                 return False
-            window = p.get_for_next_n_hours(datetime.now(tz=timezone.utc), args.get("hours", 1))
-            return c == window.get_lowest()
-        flow.get_condition_card("electricity_cond_price_at_lowest").register_run_listener(at_lowest)
+            return window(args, p).is_cheapest(c)
+        flow.get_condition_card(f"{prefix}_at_lowest").register_run_listener(at_lowest)
 
         async def at_highest(args):
             p, c = prices(args), current(args)
             if not p or c is None:
                 return False
-            window = p.get_for_next_n_hours(datetime.now(tz=timezone.utc), args.get("hours", 1))
-            return c == window.get_highest()
-        flow.get_condition_card("electricity_cond_price_at_highest").register_run_listener(at_highest)
+            return window(args, p).is_priciest(c)
+        flow.get_condition_card(f"{prefix}_at_highest").register_run_listener(at_highest)
 
         async def at_lowest_today(args):
             p, c = prices(args), current(args)
             if not p or c is None:
                 return False
-            return c == p.get_lowest()
-        flow.get_condition_card("electricity_cond_price_at_lowest_today").register_run_listener(at_lowest_today)
+            return p.is_cheapest(c)
+        flow.get_condition_card(f"{prefix}_at_lowest_today").register_run_listener(at_lowest_today)
 
         async def at_highest_today(args):
             p, c = prices(args), current(args)
             if not p or c is None:
                 return False
-            return c == p.get_highest()
-        flow.get_condition_card("electricity_cond_price_at_highest_today").register_run_listener(at_highest_today)
+            return p.is_priciest(c)
+        flow.get_condition_card(f"{prefix}_at_highest_today").register_run_listener(at_highest_today)
 
         async def among_lowest_today(args):
             p, c = prices(args), current(args)
             if not p or c is None:
                 return False
-            n = args.get("ranked_hours", 1)
-            return c in sorted(p.get_sorted_values())[:n]
-        flow.get_condition_card("electricity_cond_price_among_lowest_today").register_run_listener(among_lowest_today)
+            return p.is_among_cheapest(c, args.get("ranked_hours", 1))
+        flow.get_condition_card(f"{prefix}_among_lowest_today").register_run_listener(among_lowest_today)
 
         async def among_highest_today(args):
             p, c = prices(args), current(args)
             if not p or c is None:
                 return False
-            n = args.get("ranked_hours", 1)
-            return c in sorted(p.get_sorted_values())[-n:]
-        flow.get_condition_card("electricity_cond_price_among_highest_today").register_run_listener(among_highest_today)
+            return p.is_among_priciest(c, args.get("ranked_hours", 1))
+        flow.get_condition_card(f"{prefix}_among_highest_today").register_run_listener(among_highest_today)
 
         async def among_lowest_during_time(args):
             p, c = prices(args), current(args)
             if not p or c is None:
                 return False
-            window = p.get_for_time_window(args.get("time_from", "00:00"), args.get("time_to", "23:59"))
-            n = args.get("ranked_hours", 1)
-            return c in sorted(window.get_sorted_values())[:n]
-        flow.get_condition_card("electricity_cond_price_among_lowest_during_time").register_run_listener(among_lowest_during_time)
+            w = p.get_for_time_window(args.get("time_from", "00:00"), args.get("time_to", "23:59"))
+            return w.is_among_cheapest(c, args.get("ranked_hours", 1))
+        flow.get_condition_card(f"{prefix}_among_lowest_during_time").register_run_listener(among_lowest_during_time)
 
     def _register_gas_conditions(self) -> None:
-        flow = self.homey.flow
-
-        def prices(args):
-            device = args.get("device")
-            return getattr(device, "_gas_prices", None) if device else None
-
-        def current(args):
-            device = args.get("device")
-            if not device or not device.has_capability("measure_price_current.gas"):
-                return None
-            return device.get_capability_value("measure_price_current.gas")
-
-        async def below_threshold(args):
-            price = current(args)
-            return price is not None and price < args.get("price", 0)
-        flow.get_condition_card("gas_current_price_below").register_run_listener(below_threshold)
-
-        async def below_avg(args):
-            p, c = prices(args), current(args)
-            if not p or c is None:
-                return False
-            window = p.get_for_next_n_hours(datetime.now(tz=timezone.utc), args.get("hours", 1))
-            return c < window.get_average() * (1 - args.get("percentage", 0) / 100)
-        flow.get_condition_card("gas_cond_price_below_avg").register_run_listener(below_avg)
-
-        async def below_avg_today(args):
-            p, c = prices(args), current(args)
-            if not p or c is None:
-                return False
-            return c < p.get_average() * (1 - args.get("percentage", 0) / 100)
-        flow.get_condition_card("gas_cond_price_below_avg_today").register_run_listener(below_avg_today)
-
-        async def at_lowest(args):
-            p, c = prices(args), current(args)
-            if not p or c is None:
-                return False
-            window = p.get_for_next_n_hours(datetime.now(tz=timezone.utc), args.get("hours", 1))
-            return c == window.get_lowest()
-        flow.get_condition_card("gas_cond_price_at_lowest").register_run_listener(at_lowest)
-
-        async def at_highest(args):
-            p, c = prices(args), current(args)
-            if not p or c is None:
-                return False
-            window = p.get_for_next_n_hours(datetime.now(tz=timezone.utc), args.get("hours", 1))
-            return c == window.get_highest()
-        flow.get_condition_card("gas_cond_price_at_highest").register_run_listener(at_highest)
-
-        async def at_lowest_today(args):
-            p, c = prices(args), current(args)
-            if not p or c is None:
-                return False
-            return c == p.get_lowest()
-        flow.get_condition_card("gas_cond_price_at_lowest_today").register_run_listener(at_lowest_today)
-
-        async def at_highest_today(args):
-            p, c = prices(args), current(args)
-            if not p or c is None:
-                return False
-            return c == p.get_highest()
-        flow.get_condition_card("gas_cond_price_at_highest_today").register_run_listener(at_highest_today)
-
-        async def among_lowest_today(args):
-            p, c = prices(args), current(args)
-            if not p or c is None:
-                return False
-            n = args.get("ranked_hours", 1)
-            return c in sorted(p.get_sorted_values())[:n]
-        flow.get_condition_card("gas_cond_price_among_lowest_today").register_run_listener(among_lowest_today)
-
-        async def among_highest_today(args):
-            p, c = prices(args), current(args)
-            if not p or c is None:
-                return False
-            n = args.get("ranked_hours", 1)
-            return c in sorted(p.get_sorted_values())[-n:]
-        flow.get_condition_card("gas_cond_price_among_highest_today").register_run_listener(among_highest_today)
-
-        async def among_lowest_during_time(args):
-            p, c = prices(args), current(args)
-            if not p or c is None:
-                return False
-            window = p.get_for_time_window(args.get("time_from", "00:00"), args.get("time_to", "23:59"))
-            n = args.get("ranked_hours", 1)
-            return c in sorted(window.get_sorted_values())[:n]
-        flow.get_condition_card("gas_cond_price_among_lowest_during_time").register_run_listener(among_lowest_during_time)
+        self._register_price_conditions("gas")
 
 
 homey_export = OctopusEnergyDevice

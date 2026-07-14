@@ -41,13 +41,25 @@ class Prices:
         return None
 
     def get_for_next_n_hours(self, from_dt: datetime, n: int) -> "Prices":
-        cutoff = from_dt.timestamp() + n * 3600
-        slots = [
-            s for s in self._slots
-            if datetime.fromisoformat(s["valid_from"].replace("Z", "+00:00")).timestamp() >= from_dt.timestamp()
-            and datetime.fromisoformat(s["valid_from"].replace("Z", "+00:00")).timestamp() < cutoff
-        ]
-        return Prices(slots)
+        """Slots in effect at any point during the next n hours.
+
+        Selects slots whose [valid_from, valid_to) interval overlaps
+        [from_dt, from_dt + n h) — crucially this includes the slot currently
+        in effect (its valid_from is in the past, but it still covers `now`),
+        and an open-ended slot (valid_to is null, e.g. a fixed price).
+        """
+        start = from_dt.timestamp()
+        cutoff = start + n * 3600
+
+        def _ts(value: str) -> float:
+            return datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
+
+        def overlaps(slot: dict) -> bool:
+            vf = _ts(slot["valid_from"])
+            vt = _ts(slot["valid_to"]) if slot.get("valid_to") else None
+            return vf < cutoff and (vt is None or vt > start)
+
+        return Prices([s for s in self._slots if overlaps(s)])
 
     def get_sorted_values(self) -> list[float]:
         return sorted(s["value_inc_vat"] for s in self._slots)
@@ -67,3 +79,49 @@ class Prices:
             return slot_minutes >= from_minutes or slot_minutes < to_minutes
 
         return Prices([s for s in self._slots if in_window(s)])
+
+    # ------------------------------------------------------------------
+    # Guarded predicates — the single source of truth for trigger/condition
+    # logic. Each guards the degenerate cases so callers can't misfire:
+    #   * empty window  -> never true (avg/lowest/highest have no meaning)
+    #   * flat window    -> lowest/highest/among never true (no price to pick;
+    #                       otherwise a fixed price is trivially both the
+    #                       cheapest AND priciest and would fire both)
+    # ------------------------------------------------------------------
+
+    def is_empty(self) -> bool:
+        return not self._slots
+
+    def has_variation(self) -> bool:
+        """True only when there are at least two distinct prices."""
+        return len({s["value_inc_vat"] for s in self._slots}) > 1
+
+    def is_below_average(self, current: float, pct: float = 0) -> bool:
+        if self.is_empty():
+            return False
+        return current < self.get_average() * (1 - pct / 100)
+
+    def is_above_average(self, current: float, pct: float = 0) -> bool:
+        if self.is_empty():
+            return False
+        return current > self.get_average() * (1 + pct / 100)
+
+    def is_cheapest(self, current: float) -> bool:
+        return self.has_variation() and current <= self.get_lowest()
+
+    def is_priciest(self, current: float) -> bool:
+        return self.has_variation() and current >= self.get_highest()
+
+    def is_among_cheapest(self, current: float, n: int) -> bool:
+        if not self.has_variation():
+            return False
+        values = self.get_sorted_values()
+        threshold = values[min(max(n, 1), len(values)) - 1]  # nth-lowest price
+        return current <= threshold
+
+    def is_among_priciest(self, current: float, n: int) -> bool:
+        if not self.has_variation():
+            return False
+        values = self.get_sorted_values()
+        threshold = values[len(values) - min(max(n, 1), len(values))]  # nth-highest
+        return current >= threshold
