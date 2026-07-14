@@ -85,6 +85,7 @@ class OctopusEnergyDevice(Device):
                     homey_id, region, account_number
                 )
                 self._electricity_prices = Prices(slots)
+                self.log(f"Fetched {len(slots)} electricity rate slot(s)")
                 await self._update_electricity_capabilities(now)
                 await self._fire_electricity_triggers(now)
             except Exception as exc:
@@ -96,6 +97,7 @@ class OctopusEnergyDevice(Device):
                     homey_id, region, account_number
                 )
                 self._gas_prices = Prices(slots)
+                self.log(f"Fetched {len(slots)} gas rate slot(s)")
                 await self._update_gas_capabilities(now)
                 await self._fire_gas_triggers(now)
             except Exception as exc:
