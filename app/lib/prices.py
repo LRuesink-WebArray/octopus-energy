@@ -7,6 +7,11 @@ class Prices:
     def __init__(self, slots: list[dict]) -> None:
         self._slots = sorted(slots, key=lambda s: s["valid_from"])
 
+    def get_slots(self) -> list[dict]:
+        """Raw rate slots (JSON-serializable) — used to pass prices through
+        Homey flow-trigger state, which must survive JSON serialization."""
+        return self._slots
+
     def get_average(self) -> float:
         if not self._slots:
             return 0.0

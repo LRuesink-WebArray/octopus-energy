@@ -56,7 +56,7 @@ class OctopusEnergyDevice(Device):
         delay_ms = int((next_hour.timestamp() - now.timestamp() + jitter) * 1000)
 
         self._rates_timer = self.homey.set_timeout(self._rates_tick, delay_ms)
-        self.log("Next rates poll in %.0fs (+%ds jitter)", delay_ms / 1000, jitter)
+        self.log(f"Next rates poll in {delay_ms / 1000:.0f}s (+{jitter}s jitter)")
 
     async def _rates_tick(self) -> None:
         try:
@@ -145,7 +145,7 @@ class OctopusEnergyDevice(Device):
         if current is None:
             return
 
-        state = {"prices": self._electricity_prices, "current": current, "energy_type": "electricity"}
+        state = {"slots": self._electricity_prices.get_slots(), "current": current, "energy_type": "electricity"}
 
         await self._trigger("electricity_price_below_avg", {}, state)
         await self._trigger("electricity_price_above_avg", {}, state)
@@ -174,7 +174,7 @@ class OctopusEnergyDevice(Device):
         if current is None:
             return
 
-        state = {"prices": self._gas_prices, "current": current, "energy_type": "gas"}
+        state = {"slots": self._gas_prices.get_slots(), "current": current, "energy_type": "gas"}
 
         await self._trigger("gas_price_below_avg", {}, state)
         await self._trigger("gas_price_above_avg", {}, state)
@@ -193,7 +193,10 @@ class OctopusEnergyDevice(Device):
     async def _trigger(self, card_id: str, tokens: dict, state: dict) -> None:
         try:
             card = self.homey.flow.get_device_trigger_card(card_id)
-            await card.trigger(self, tokens, state)
+            # FlowCardTriggerDevice.trigger(device, tokens={}, **trigger_kwargs):
+            # state is not positional — pass it as a keyword so the SDK forwards
+            # it to the card's run listener.
+            await card.trigger(self, tokens, state=state)
         except Exception as exc:
             self.error("Failed to trigger %s: %s", card_id, exc)
 
@@ -216,7 +219,7 @@ class OctopusEnergyDevice(Device):
 
     def _register_electricity_triggers(self) -> None:
         def make_price_state(state):
-            return state["prices"], state["current"]
+            return Prices(state["slots"]), state["current"]
 
         def register_avg(card_id: str, use_today: bool) -> None:
             card = self.homey.flow.get_device_trigger_card(card_id)
@@ -272,7 +275,7 @@ class OctopusEnergyDevice(Device):
 
     def _register_gas_triggers(self) -> None:
         def make_price_state(state):
-            return state["prices"], state["current"]
+            return Prices(state["slots"]), state["current"]
 
         for card_id, use_today, above in [
             ("gas_price_below_avg", False, False),
